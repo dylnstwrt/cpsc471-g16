@@ -23,6 +23,7 @@ class Employee(models.Model):
     def __str__(self):
         return str(self.emp_id)
 
+################################################
 
 class Manager(Employee):
     """
@@ -38,6 +39,7 @@ class Manager(Employee):
     def __str__(self):
         return str(self.man_id)
 
+################################################
 
 class Administrator(Manager):
     """
@@ -51,6 +53,7 @@ class Administrator(Manager):
     def __str__(self):
         return str(self.admin_id)
 
+################################################
 
 class Equipment(models.Model):
     """
@@ -68,6 +71,7 @@ class Equipment(models.Model):
     def __str__(self):
         return str(self.eq_id)
 
+################################################
 
 class Fixture(Equipment):
     """
@@ -78,6 +82,7 @@ class Fixture(Equipment):
     class Meta:
         app_label = 'api'
 
+################################################
 
 class Till(Equipment):
     """
@@ -92,6 +97,7 @@ class Till(Equipment):
     def __str__(self):
         return str(self.serial_no)
 
+################################################
 
 class Transaction(models.Model):
     """
@@ -113,6 +119,7 @@ class Transaction(models.Model):
     def __str__(self):
         return str(self.tid)
 
+################################################
 
 class Sale(Transaction):
     """
@@ -123,6 +130,7 @@ class Sale(Transaction):
     class Meta:
         app_label = 'api'
 
+################################################
 
 class Return(Transaction):
     """
@@ -134,6 +142,7 @@ class Return(Transaction):
     class Meta:
         app_label = 'api'
 
+################################################
 
 class Special(Transaction):
     """
@@ -144,6 +153,7 @@ class Special(Transaction):
     class Meta:
         app_label = 'api'
 
+################################################
 
 class Brand(models.Model):
     """
@@ -159,6 +169,7 @@ class Brand(models.Model):
     def __str__(self):
         return str(self.name)
 
+################################################
 
 class Distributor(models.Model):
     """
@@ -175,6 +186,7 @@ class Distributor(models.Model):
     def __str__(self):
         return str(self.name)
 
+################################################
 
 class Coupon(models.Model):
     """
@@ -199,6 +211,7 @@ class Coupon(models.Model):
     def __str__(self):
         return str(self.c_code)
 
+################################################
 
 class IncidentReport(models.Model):
     """
@@ -217,6 +230,7 @@ class IncidentReport(models.Model):
     def __str__(self):
         return str(self.description)
 
+################################################
 
 class Item(models.Model):
     """
@@ -238,6 +252,7 @@ class Item(models.Model):
     def __str__(self):
         return str(self.name)
 
+################################################
 
 class Clothing(Item):
     """
@@ -250,6 +265,7 @@ class Clothing(Item):
         app_label = 'api'
         #abstract = True
 
+################################################
 
 class Bottom(Clothing):
     """
@@ -261,6 +277,7 @@ class Bottom(Clothing):
     class Meta:
         app_label = 'api'
 
+################################################
 
 class Top(Clothing):
     """
@@ -282,6 +299,7 @@ class Top(Clothing):
     class Meta:
         app_label = 'api'
 
+################################################
 
 class Accessory(Item):
     """
@@ -291,6 +309,8 @@ class Accessory(Item):
 
     class Meta:
         app_label = 'api'
+
+################################################
 
 class Basket(models.Model):
     """

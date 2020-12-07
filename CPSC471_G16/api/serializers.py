@@ -80,7 +80,7 @@ class CouponSerializer(serializers.ModelSerializer):
         
 class  IncidentReportSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models. IncidentReport
+        model = models.IncidentReport
         fields = '__all__'
 
         
