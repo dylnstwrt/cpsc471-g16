@@ -50,14 +50,23 @@ class Administrator(Manager):
     def __str__(self):
         return str(self.admin_id)
 
+
 class Equipment(models.Model):
     """
     Docstring
     """
     eq_id = models.IntegerField()
-    model = models.CharField( max_length=50)
-    date_aquired = models.DateField( auto_now=False, auto_now_add=False)
+    model = models.CharField(max_length=50)
+    date_aquired = models.DateField(auto_now=False, auto_now_add=False)
     eq_type = models.CharField(max_length=50)
+
+    class Meta:
+        app_id = 'api'
+        abstract = True
+
+    def __str__(self):
+        return str(self.eq_id)
+
 
 class Fixture(Equipment):
     """
@@ -68,8 +77,6 @@ class Fixture(Equipment):
     class Meta:
         app_id = 'api'
 
-    def __str__(self):
-        return str(self.eq_id)
 
 class Till(Equipment):
     """
@@ -83,6 +90,7 @@ class Till(Equipment):
 
     def __str__(self):
         return str(self.serial_no)
+
 
 class Transaction(models.Model):
     """
@@ -132,6 +140,9 @@ class Special(Transaction):
     """
     models.ForeignKey(Manager, on_delete=models.SET_NULL)
 
+    class Meta:
+        app_label = 'api'
+
 
 class Brand(models.Model):
     """
@@ -163,6 +174,7 @@ class Distributor(models.Model):
     def __str__(self):
         return str(self.name)
 
+
 class Coupon(models.Model):
     """
     docstring
@@ -183,6 +195,10 @@ class Coupon(models.Model):
     class Meta:
         app_id = 'api'
 
+    def __str__(self):
+        return str(self.c_code)
+
+
 class IncidentReport(models.Model):
     """
     docstring
@@ -193,6 +209,84 @@ class IncidentReport(models.Model):
     incident_date = models.DateField()
     filing_date = models.DateField(auto_now=False, auto_now_add=True)
     description = models.CharField(max_length=50)
+
+    class Meta:
+        app_id = 'api'
+
+    def __str__(self):
+        return str(self.description)
+
+
+class Item(models.Model):
+    """
+    docstring
+    """
+    upc = models.IntegerField(max_length=8)
+    name = models.CharField(max_length=50)
+    colour = models.CharField(max_length=50)
+    description = models.CharField(max_length=50)
+    stock_quantity = models.IntegerField()
+    sales_price = models.FloatField()
+    unit_price = models.FloatField()
+    b_id = models.ForeignKey(Brand, on_delete=models.SET_NULL)
+
+    class Meta:
+        app_id = 'api'
+        abstract = True
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Clothing(Item):
+    """
+    docstring
+    """
+    material = models.CharField(max_length=50)
+    cl_type = models.CharField(max_length=50)
+
+    class Meta:
+        app_id = 'api'
+        abstract = True
+
+
+class Bottom(Clothing):
+    """
+    docstring
+    """
+    waist = models.IntegerField(max_length=2)
+    length = models.IntegerField(max_length=2)
+
+    class Meta:
+        app_id = 'api'
+
+
+class Top(Clothing):
+    """
+    docstring
+    """
+    class SizeChoices(models.TextChoices):
+        XSMALL = 'XS', ('Extra-Small')
+        SMALL = 'S', ('Small')
+        MEDIUM = 'M', ('Medium')
+        LARGE = 'L', ('Large')
+        XLARGE = 'XL', ('Extra-Large')
+
+    size = models.CharField(
+        max_length=2,
+        choices=SizeChoices.choices,
+        default=SizeChoices.MEDIUM
+    )
+
+    class Meta:
+        app_id = 'api'
+
+
+class Accessory(Item):
+    """
+    docstring
+    """
+    ac_type = models.CharField(max_length=50)
 
     class Meta:
         app_id = 'api'
