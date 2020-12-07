@@ -18,7 +18,7 @@ class Employee(models.Model):
 
     class Meta:
         app_label = 'api'
-        ##abstract = True
+        #abstract = True
 
     def __str__(self):
         return str(self.emp_id)
@@ -104,7 +104,7 @@ class Transaction(models.Model):
     subtotal = models.FloatField()
     sales_tax = models.FloatField()
     total = models.FloatField()
-    serial_no = models.ForeignKey(Till, on_delete=models.CASCADE)
+    serial_no = models.ForeignKey(Till, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         app_label = 'api'
@@ -229,7 +229,7 @@ class Item(models.Model):
     stock_quantity = models.IntegerField()
     sales_price = models.FloatField()
     unit_price = models.FloatField()
-    b_id = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    b_id = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         app_label = 'api'
@@ -288,6 +288,16 @@ class Accessory(Item):
     docstring
     """
     ac_type = models.CharField(max_length=50)
+
+    class Meta:
+        app_label = 'api'
+
+class Basket(models.Model):
+    """
+    docstring later
+    """
+    tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    basket_item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'api'
