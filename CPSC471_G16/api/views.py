@@ -17,3 +17,30 @@ class EmployeeList(APIView):
             serializer.save()
             return Response (serializer.data, status=status.HTTP_201_CREATED)
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ManagerList(APIView):
+    def get(self, request, format=None):
+        managers = models.Manager.objects.all()
+        serializer = serializers.EmployeeSerializer(managers, many=True)
+        return Response (serializer.data)
+
+    def post(self, request, format=None):
+        serializer = serializers.ManagerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response (serializer.data, status=status.HTTP_201_CREATED)
+        return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AdministratorList(APIView):
+    def get(self, request, format=None):
+        administrators = models.Administrator.objects.all()
+        serializer = serializers.AdministratorSerializer(administrators, many=True)
+        return Response (serializer.data)
+    def post(self, request, format=None):
+        serializer = serializers.AdministratorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response (serializer.data, status=status.HTTP_201_CREATED)
+        return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

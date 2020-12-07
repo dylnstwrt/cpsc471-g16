@@ -30,12 +30,10 @@ class FixtureSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class  TillSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Till
         fields = '__all__'
-
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -80,9 +78,9 @@ class CouponSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
         
-class IncidentSerializer(serializers.ModelSerializer):
+class  IncidentReportSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Incident
+        model = models. IncidentReport
         fields = '__all__'
 
         
