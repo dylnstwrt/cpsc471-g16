@@ -1,10 +1,11 @@
 """
-    docstring
+    TODO:
+        - update "on_delete" clause for FK's. Right now it is CASCADE; but should be SET_NULL.
 """
 from django.db import models
 
 # Create your models here.
-
+#
 
 class Employee(models.Model):
     """
@@ -17,7 +18,7 @@ class Employee(models.Model):
 
     class Meta:
         app_label = 'api'
-        abstract = True
+        ##abstract = True
 
     def __str__(self):
         return str(self.emp_id)
@@ -32,7 +33,7 @@ class Manager(Employee):
 
     class Meta:
         app_label = 'api'
-        abstract = True
+        ##abstract = True
 
     def __str__(self):
         return str(self.man_id)
@@ -61,8 +62,8 @@ class Equipment(models.Model):
     eq_type = models.CharField(max_length=50)
 
     class Meta:
-        app_id = 'api'
-        abstract = True
+        app_label = 'api'
+        #abstract = True
 
     def __str__(self):
         return str(self.eq_id)
@@ -75,7 +76,7 @@ class Fixture(Equipment):
     description = models.CharField(max_length=50)
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'
 
 
 class Till(Equipment):
@@ -86,7 +87,7 @@ class Till(Equipment):
     operating_system = models.CharField(max_length=50)
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'
 
     def __str__(self):
         return str(self.serial_no)
@@ -97,17 +98,17 @@ class Transaction(models.Model):
     docstring
     """
     tid = models.IntegerField(max_length=8)
-    eid = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    eid = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
     payment_method = models.CharField(max_length=50)
     customer_email = models.CharField(max_length=50)
     subtotal = models.FloatField()
     sales_tax = models.FloatField()
     total = models.FloatField()
-    serial_no = models.ForeignKey(Till, on_delete=models.SET_NULL)
+    serial_no = models.ForeignKey(Till, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'api'
-        abstract = True
+        #abstract = True
 
     def __str__(self):
         return str(self.tid)
@@ -127,7 +128,7 @@ class Return(Transaction):
     """
     docstring
     """
-    original_tid = models.ForeignKey(Transaction, on_delete=models.SET_NULL)
+    original_tid = models.ForeignKey(Transaction, on_delete=models.SET_NULL, related_name="sale_tid", null=True)
     reason = models.CharField(max_length=50)
 
     class Meta:
@@ -138,7 +139,7 @@ class Special(Transaction):
     """
     docstring
     """
-    models.ForeignKey(Manager, on_delete=models.SET_NULL)
+    models.ForeignKey(Manager, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         app_label = 'api'
@@ -169,7 +170,7 @@ class Distributor(models.Model):
     contact_num = models.IntegerField(max_length=12)
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'
 
     def __str__(self):
         return str(self.name)
@@ -193,7 +194,7 @@ class Coupon(models.Model):
     amount = models.IntegerField()
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'
 
     def __str__(self):
         return str(self.c_code)
@@ -203,15 +204,15 @@ class IncidentReport(models.Model):
     """
     docstring
     """
-    eid = models.ForeignKey(Employee, on_delete=models.SET_NULL)
-    man_id = models.ForeignKey(Manager, on_delete=models.SET_NULL)
+    eid = models.ForeignKey(Employee, on_delete=models.SET_NULL, related_name="employee_id", null=True)
+    man_id = models.ForeignKey(Manager, on_delete=models.SET_NULL, related_name="manager_id", null=True)
     action_taken = models.CharField(max_length=50)
     incident_date = models.DateField()
     filing_date = models.DateField(auto_now=False, auto_now_add=True)
     description = models.CharField(max_length=50)
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'
 
     def __str__(self):
         return str(self.description)
@@ -228,11 +229,11 @@ class Item(models.Model):
     stock_quantity = models.IntegerField()
     sales_price = models.FloatField()
     unit_price = models.FloatField()
-    b_id = models.ForeignKey(Brand, on_delete=models.SET_NULL)
+    b_id = models.ForeignKey(Brand, on_delete=models.CASCADE)
 
     class Meta:
-        app_id = 'api'
-        abstract = True
+        app_label = 'api'
+        #abstract = True
 
     def __str__(self):
         return str(self.name)
@@ -246,8 +247,8 @@ class Clothing(Item):
     cl_type = models.CharField(max_length=50)
 
     class Meta:
-        app_id = 'api'
-        abstract = True
+        app_label = 'api'
+        #abstract = True
 
 
 class Bottom(Clothing):
@@ -258,7 +259,7 @@ class Bottom(Clothing):
     length = models.IntegerField(max_length=2)
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'
 
 
 class Top(Clothing):
@@ -279,7 +280,7 @@ class Top(Clothing):
     )
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'
 
 
 class Accessory(Item):
@@ -289,4 +290,4 @@ class Accessory(Item):
     ac_type = models.CharField(max_length=50)
 
     class Meta:
-        app_id = 'api'
+        app_label = 'api'

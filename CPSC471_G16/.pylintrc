@@ -587,4 +587,4 @@ valid-metaclass-classmethod-first-arg=cls
 overgeneral-exceptions=BaseException,
                        Exception
 
-"python.linting.pylintArgs": ["--load-plugins", "pylint_django"]
+"python.linting.pylintArgs": ["--load-plugins", "pylint_django", "pylint_protobuf"]
