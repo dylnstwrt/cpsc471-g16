@@ -113,13 +113,13 @@ class Transaction(models.Model):
     payment_method = models.CharField(max_length=50)
     customer_email = models.CharField(max_length=50)
     subtotal = models.FloatField(
-        default=0.0
+        default=0.00
     )
     sales_tax = models.FloatField(
-        default=0.0
+        default=0.00
     )
     total = models.FloatField(
-        default=0.0
+        default=0.00
     )
     serial_no = models.ForeignKey(Till, on_delete=models.SET_NULL, null=True)
     completed = models.BooleanField(
@@ -140,7 +140,9 @@ class Sale(Transaction):
     """
     docstring
     """
-    profit = models.FloatField()
+    profit = models.FloatField(
+        default=0.00
+    )
 
     class Meta:
         app_label = 'api'
@@ -332,7 +334,8 @@ class Basket(models.Model):
     docstring later
     """
     tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
-    upc = models.ForeignKey(Item, on_delete=models.CASCADE)
+    #upc = models.ForeignKey(Item, on_delete=models.CASCADE)
+    basket_item = models.ManyToManyField(Item)
 
     class Meta:
         app_label = 'api'
@@ -343,29 +346,53 @@ class Distributes(models.Model):
     """
     dist_id = models.ForeignKey(Distributor, on_delete=models.SET_NULL, null=True)
     item_upc = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
+    
 
     class Meta:
         app_label = 'api'
 
+class Discounts:
+    tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'api'
 """
 docstring: 
-TODO: doesn't crash; but also doesn't summate subtotal. probably dealing with values incorrectly
+TODO: need to cover special and return with similar recievers
 """
-@receiver(pre_save, sender=Transaction)
+@receiver(pre_save, sender=Sale)
 def update_item_decrement(sender, instance,  **kwargs):
-    if instance.completed == True:
-        print("updating subtotal")
-        sub_total = 0
+    if instance.completed:
+        print("Calculating Subtotal: ")
+        basket_instances = Basket.objects.filter(tid = instance.id)
+        subtotal = 0
         profit = 0
-        basket = Basket.objects.filter(tid=instance.id)
-        print(basket)
-        for item in basket: # tid, upc
-            print(item)
-            if item.tid == instance.id:
-                sale_item = Item.objects.get(pk=item.upc)
-                #getters and setters?
-                item_profit = sale_item.sales_price - sale_item.item_cost
-                sub_total += item.sales_price
-                print(sub_total)
-                profit += item_profit
-        instance.subtotal = sub_total
+        for basket in basket_instances:
+            item_obj = basket.basket_item.all().first()
+            if (item_obj is not None):
+                subtotal += item_obj.sales_price
+                profit += item_obj.sales_price - item_obj.unit_price
+                item_obj.stock_quantity -= 1
+        instance.subtotal = subtotal
+        instance.sales_tax = .05 * subtotal
+        instance.total = subtotal + instance.sales_tax
+
+'''
+haven't tested this yet
+'''
+@receiver(pre_save, sender=Return)
+def update_item_increment(sender, instance,  **kwargs):
+    if instance.completed:
+        print("Calculating Subtotal: ")
+        basket_instances = Basket.objects.filter(tid = instance.id)
+        subtotal = 0
+        profit = 0
+        for basket in basket_instances:
+            item_obj = basket.basket_item.all().first()
+            if (item_obj is not None):
+                subtotal -= item_obj.sales_price
+                profit -= item_obj.sales_price - item_obj.unit_price
+                item_obj.stock_quantity -= 1
+        instance.subtotal = subtotal
+        instance.sales_tax = .05 * subtotal
+        instance.total = subtotal + instance.sales_tax
