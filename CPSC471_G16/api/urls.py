@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework import routers
 from . import views
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'employee_pretty', views.EmployeeViewSet)
 router.register(r'manager_pretty', views.ManagerViewSet)
 router.register(r'administrator_pretty', views.AdministratorViewSet)
@@ -53,4 +53,3 @@ urlpatterns = [
     path('accessories', views.AccessoryList.as_view()),
     path('baskets', views.BasketList.as_view())
 ]
-
