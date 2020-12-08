@@ -125,6 +125,12 @@ class Transaction(models.Model):
     completed = models.BooleanField(
         default=False
     )
+    message = models.CharField(
+        max_length=50,
+        editable=False,
+        default="",
+        )
+
     class Meta:
         app_label = 'api'
         #abstract = True
@@ -358,7 +364,7 @@ class Discounts:
         app_label = 'api'
 """
 docstring: 
-TODO: need to cover special and return with similar recievers
+TODO: do stuff to financial view if possible
 """
 @receiver(pre_save, sender=Sale)
 def update_item_decrement(sender, instance,  **kwargs):
@@ -367,15 +373,20 @@ def update_item_decrement(sender, instance,  **kwargs):
         basket_instances = Basket.objects.filter(tid = instance.id)
         subtotal = 0
         profit = 0
+        warnings = ""
         for basket in basket_instances:
             item_obj = basket.basket_item.all().first()
-            if (item_obj is not None):
+            if item_obj is not None:
                 subtotal += item_obj.sales_price
                 profit += item_obj.sales_price - item_obj.unit_price
                 item_obj.stock_quantity -= 1
+                if item_obj.stock_quantity < 2: # set threshold here
+                    warnings += " LowStock:{item_obj.name}_{item_obj.upc}"
         instance.subtotal = subtotal
         instance.sales_tax = .05 * subtotal
         instance.total = subtotal + instance.sales_tax
+        instance.message = "Completed_Sale"+warnings
+        
 
 '''
 haven't tested this yet
@@ -389,10 +400,10 @@ def update_item_increment(sender, instance,  **kwargs):
         profit = 0
         for basket in basket_instances:
             item_obj = basket.basket_item.all().first()
-            if (item_obj is not None):
+            if item_obj is not None:
                 subtotal -= item_obj.sales_price
                 profit -= item_obj.sales_price - item_obj.unit_price
-                item_obj.stock_quantity -= 1
+                item_obj.stock_quantity += 1
         instance.subtotal = subtotal
         instance.sales_tax = .05 * subtotal
         instance.total = subtotal + instance.sales_tax
