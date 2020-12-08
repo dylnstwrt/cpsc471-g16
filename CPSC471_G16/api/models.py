@@ -3,6 +3,11 @@
         
 """
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.forms.models import model_to_dict
+from django.core import serializers
+
 
 # Create your models here.
 #
@@ -107,8 +112,12 @@ class Transaction(models.Model):
     eid = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
     payment_method = models.CharField(max_length=50)
     customer_email = models.CharField(max_length=50)
-    subtotal = models.FloatField()
-    sales_tax = models.FloatField()
+    subtotal = models.FloatField(
+        default=0.0
+    )
+    sales_tax = models.FloatField(
+        default=0.0
+    )
     total = models.FloatField(
         default=0.0
     )
@@ -122,6 +131,8 @@ class Transaction(models.Model):
 
     def __str__(self):
         return str(self.tid)
+
+
 
 ################################################
 
@@ -321,7 +332,7 @@ class Basket(models.Model):
     docstring later
     """
     tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
-    basket_item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    upc = models.ForeignKey(Item, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'api'
@@ -331,4 +342,30 @@ class Distributes(models.Model):
 
     """
     dist_id = models.ForeignKey(Distributor, on_delete=models.SET_NULL, null=True)
-    item_upd = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
+    item_upc = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        app_label = 'api'
+
+"""
+docstring: 
+TODO: doesn't crash; but also doesn't summate subtotal. probably dealing with values incorrectly
+"""
+@receiver(pre_save, sender=Transaction)
+def update_item_decrement(sender, instance,  **kwargs):
+    if instance.completed == True:
+        print("updating subtotal")
+        sub_total = 0
+        profit = 0
+        basket = Basket.objects.filter(tid=instance.id)
+        print(basket)
+        for item in basket: # tid, upc
+            print(item)
+            if item.tid == instance.id:
+                sale_item = Item.objects.get(pk=item.upc)
+                #getters and setters?
+                item_profit = sale_item.sales_price - sale_item.item_cost
+                sub_total += item.sales_price
+                print(sub_total)
+                profit += item_profit
+        instance.subtotal = sub_total
