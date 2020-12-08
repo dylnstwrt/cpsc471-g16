@@ -1,9 +1,13 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, viewsets
 from . import serializers
 from . import models
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = models.Employee.objects.all()
+    serializer_class = serializers.EmployeeSerializer
 
 class EmployeeList(APIView):
     def get(self, request, format=None):
@@ -18,7 +22,17 @@ class EmployeeList(APIView):
             return Response (serializer.data, status=status.HTTP_201_CREATED)
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class EmployeeSingle(APIView):
+    def get(self, request, emp_id, format=None):
+        employee = models.Employee.objects.get (emp_id=emp_id)
+        serializer = serializers.EmployeeSerializer(employee)
+        return Response (serializer.data)
+
 ################################################
+
+class ManagerViewSet(viewsets.ModelViewSet):
+    queryset = models.Manager.objects.all()
+    serializer_class = serializers.ManagerSerializer
 
 class ManagerList(APIView):
     def get(self, request, format=None):
@@ -33,7 +47,16 @@ class ManagerList(APIView):
             return Response (serializer.data, status=status.HTTP_201_CREATED)
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class ManagerSingle(APIView):
+    def get(self, request, man_id, format=None):
+        manager = models.Manager.objects.get (man_id=man_id)
+        serializer = serializers.ManagerSerializer(manager)
+        return Response (serializer.data)
+
 ################################################
+class AdministratorViewSet(viewsets.ModelViewSet):
+    queryset = models.Administrator.objects.all()
+    serializer_class = serializers.AdministratorSerializer
 
 class AdministratorList(APIView):
     def get(self, request, format=None):
@@ -47,7 +70,16 @@ class AdministratorList(APIView):
             return Response (serializer.data, status=status.HTTP_201_CREATED)
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class AdministratorSingle(APIView):
+    def get(self, request, admin_id, format=None):
+        admin = models.Administrator.objects.get (admin_id = admin_id)
+        serializer = serializers.AdministratorSerializer(admin)
+        return Response (serializer.data)
+
 ################################################
+class EquipmentViewSet(viewsets.ModelViewSet):
+    queryset = models.Equipment.objects.all()
+    serializer_class = serializers.EquipmentSerializer
 
 class EquipmentList(APIView):
     def get(self, request, format=None):
@@ -63,6 +95,9 @@ class EquipmentList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class TillViewSet(viewsets.ModelViewSet):
+    queryset = models.Till.objects.all()
+    serializer_class = serializers.TillSerializer
 
 class TillList(APIView):
     def get(self, request, format=None):
@@ -78,6 +113,9 @@ class TillList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class FixtureViewSet(viewsets.ModelViewSet):
+    queryset = models.Fixture.objects.all()
+    serializer_class = serializers.FixtureSerializer
 
 class FixtureList(APIView):
     def get(self, request, format=None):
@@ -93,6 +131,9 @@ class FixtureList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = models.Transaction.objects.all()
+    serializer_class = serializers.TransactionSerializer
 
 class TransactionList(APIView):
     def get(self, request, format=None):
@@ -108,6 +149,9 @@ class TransactionList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class SalesViewSet(viewsets.ModelViewSet):
+    queryset = models.Sale.objects.all()
+    serializer_class = serializers.SaleSerializer
 
 class SaleList(APIView):
     def get(self, request, format=None):
@@ -123,6 +167,9 @@ class SaleList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class ReturnViewSet(viewsets.ModelViewSet):
+    queryset = models.Return.objects.all()
+    serializer_class = serializers.ReturnSerializer
 
 class ReturnList(APIView):
     def get(self, request, format=None):
@@ -138,6 +185,9 @@ class ReturnList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class SpecialViewSet(viewsets.ModelViewSet):
+    queryset = models.Special.objects.all()
+    serializer_class = serializers.SpecialSerializer
 
 class SpecialList(APIView):
     def get(self, request, format=None):
@@ -152,6 +202,9 @@ class SpecialList(APIView):
             return Response (serializer.data, status=status.HTTP_201_CREATED)
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 ################################################
+class BrandViewSet(viewsets.ModelViewSet):
+    queryset = models.Brand.objects.all()
+    serializer_class = serializers.BrandSerializer
 
 class BrandList(APIView):
     def get(self, request, format=None):
@@ -167,6 +220,9 @@ class BrandList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class DistributorViewSet(viewsets.ModelViewSet):
+    queryset = models.Distributor.objects.all()
+    serializer_class = serializers.DistributorSerializer
 
 class DistributorList(APIView):
     def get(self, request, format=None):
@@ -182,6 +238,9 @@ class DistributorList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class CouponViewSet(viewsets.ModelViewSet):
+    queryset = models.Coupon.objects.all()
+    serializer_class = serializers.CouponSerializer
 
 class CouponList(APIView):
     def get(self, request, format=None):
@@ -197,6 +256,9 @@ class CouponList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class IncidentReportViewSet(viewsets.ModelViewSet):
+    queryset = models.IncidentReport.objects.all()
+    serializer_class = serializers.IncidentReportSerializer
 
 class IncidentReportList(APIView):
     def get(self, request, format=None):
@@ -212,6 +274,9 @@ class IncidentReportList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = models.Item.objects.all()
+    serializer_class = serializers.ItemSerializer
 
 class ItemList(APIView):
     def get(self, request, format=None):
@@ -227,6 +292,10 @@ class ItemList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class ClothingViewSet(viewsets.ModelViewSet):
+    queryset = models.Clothing.objects.all()
+    serializer_class = serializers.ClothingSerializer
+
 
 class ClothingList(APIView):
     def get(self, request, format=None):
@@ -242,6 +311,9 @@ class ClothingList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class BottomViewSet(viewsets.ModelViewSet):
+    queryset = models.Bottom.objects.all()
+    serializer_class = serializers.BottomSerializer
 
 class BottomList(APIView):
     def get(self, request, format=None):
@@ -272,6 +344,9 @@ class ItemList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class TopViewSet(viewsets.ModelViewSet):
+    queryset = models.Top.objects.all()
+    serializer_class = serializers.TopSerializer
 
 class TopList(APIView):
     def get(self, request, format=None):
@@ -287,6 +362,9 @@ class TopList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class AcessoryViewSet(viewsets.ModelViewSet):
+    queryset = models.Accessory.objects.all()
+    serializer_class = serializers.AccessorySerializer
 
 class AccessoryList(APIView):
     def get(self, request, format=None):
@@ -302,6 +380,9 @@ class AccessoryList(APIView):
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ################################################
+class BasketViewSet(viewsets.ModelViewSet):
+    queryset = models.Basket.objects.all()
+    serializer_class = serializers.BasketSerializer
 
 class BasketList(APIView):
     def get(self, request, format=None):
