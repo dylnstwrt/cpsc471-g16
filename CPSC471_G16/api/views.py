@@ -397,3 +397,6 @@ class BasketList(APIView):
             return Response (serializer.data, status=status.HTTP_201_CREATED)
         return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class FinancialViewSet(viewsets.ModelViewSet):
+    queryset = models.Financial.objects.all().order_by('timestamp')
+    serializer_class = serializers.FinancialSerializer
