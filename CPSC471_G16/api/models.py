@@ -455,6 +455,13 @@ def complete_return(sender, instance,  **kwargs):
         instance.sales_tax = -(.05 * original_sale.subtotal)
         instance.total = instance.subtotal + instance.sales_tax
 
+        basket_instances = Basket.objects.filter(tid = instance.original_tid.id)
+        for basket in basket_instances:
+            item_obj = basket.basket_item.all().first()
+            if item_obj is not None:
+                item_obj.stock_quantity += 1
+                item_obj.save()
+
 @receiver(post_save, sender=Sale)
 def update_financials_sale(sender, instance, **kwargs):
     '''
