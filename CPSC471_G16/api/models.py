@@ -405,7 +405,6 @@ def complete_sale(sender, instance,  **kwargs):
                 elif item_obj.stock_quantity < 0:
                     warnings += " OverSold:"+item_obj.name+"_"+str(item_obj.upc)
                 item_obj.save()
-        #print(Discount.objects.filter(tid = instance.id))
 
         instance.subtotal = subtotal
         instance.sales_tax = .05 * subtotal
@@ -436,7 +435,6 @@ def complete_special(sender, instance,  **kwargs):
                     elif item_obj.stock_quantity < 0:
                         warnings += " OverSold:"+item_obj.name+"_"+str(item_obj.upc)
                     item_obj.save()
-            #print(Discount.objects.filter(tid = instance.id))
 
             instance.subtotal = subtotal
             instance.sales_tax = .05 * subtotal
@@ -450,9 +448,6 @@ def complete_return(sender, instance,  **kwargs):
     docstring
     '''
     if instance.completed:
-        basket_instances = Basket.objects.filter(tid = instance.id)
-        subtotal = 0
-        profit = 0
         
         original_sale = Sale.objects.filter(id=instance.original_tid.id).first()
 
