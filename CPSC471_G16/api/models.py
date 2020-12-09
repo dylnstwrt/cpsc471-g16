@@ -454,6 +454,7 @@ def complete_return(sender, instance,  **kwargs):
         instance.subtotal = -original_sale.subtotal
         instance.sales_tax = -(.05 * original_sale.subtotal)
         instance.total = instance.subtotal + instance.sales_tax
+        instance.message = "Completed_Return"
 
         basket_instances = Basket.objects.filter(tid = instance.original_tid.id)
         for basket in basket_instances:
