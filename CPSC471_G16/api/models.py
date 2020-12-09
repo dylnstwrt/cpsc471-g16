@@ -1,12 +1,9 @@
-"""
-    TODO:
-        
-"""
+'''
+CPSC471 - Group 16
+'''
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
-from django.forms.models import model_to_dict
-from django.core import serializers
 
 
 # Create your models here.
@@ -348,7 +345,7 @@ class Basket(models.Model):
 
 class Distributes(models.Model):
     """
-
+    docstring
     """
     #change to manytomany
     dist_id = models.ManyToManyField(Distributor)
@@ -360,7 +357,7 @@ class Distributes(models.Model):
 
 class Discount(models.Model):
     '''
-
+    docstring
     '''
     tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
     c_code = models.ManyToManyField(Coupon)
@@ -388,6 +385,9 @@ TODO: do stuff to financial view if possible
 """
 @receiver(pre_save, sender=Sale)
 def complete_sale(sender, instance,  **kwargs):
+    '''
+    docstring
+    '''
     if instance.completed:
         print("Calculating Subtotal: ")
         basket_instances = Basket.objects.filter(tid = instance.id)
@@ -415,6 +415,9 @@ def complete_sale(sender, instance,  **kwargs):
         
 @receiver(pre_save, sender=Special)
 def complete_special(sender, instance,  **kwargs):
+    '''
+    docstring
+    '''
     if instance.completed:
         if instance.completed:
             print("Calculating Subtotal: ")
@@ -440,29 +443,28 @@ def complete_special(sender, instance,  **kwargs):
             instance.total = subtotal + instance.sales_tax
             instance.message = "Completed_Sale"+warnings
 
-'''
-lil broken
-'''
+
 @receiver(pre_save, sender=Return)
 def complete_return(sender, instance,  **kwargs):
+    '''
+    docstring
+    '''
     if instance.completed:
-        print("Calculating Subtotal: ")
         basket_instances = Basket.objects.filter(tid = instance.id)
         subtotal = 0
         profit = 0
-        for basket in basket_instances:
-            item_obj = basket.basket_item.all().first()
-            if item_obj is not None:
-                subtotal -= item_obj.sales_price
-                profit -= item_obj.sales_price - item_obj.unit_price
-                item_obj.stock_quantity += 1
-        item_obj.save()
-        instance.subtotal = subtotal
-        instance.sales_tax = -.05 * subtotal
-        instance.total = subtotal + instance.sales_tax
+        
+        original_sale = Sale.objects.filter(id=instance.original_tid.id).first()
+
+        instance.subtotal = -original_sale.subtotal
+        instance.sales_tax = -(.05 * original_sale.subtotal)
+        instance.total = instance.subtotal + instance.sales_tax
 
 @receiver(post_save, sender=Sale)
 def update_financials_sale(sender, instance, **kwargs):
+    '''
+    docstring
+    '''
     total_rev = 0
     total_tax = 0
     total_profit = 0
@@ -475,16 +477,21 @@ def update_financials_sale(sender, instance, **kwargs):
     financial_instance = Financial.objects.create(sales_tax=total_tax, profit=total_profit, revenue=total_rev)
     financial_instance.save()
 
-"""@receiver(post_save, sender=Return)
+@receiver(post_save, sender=Return)
 def update_financials(sender, instance, **kwargs):
+    '''
+    docstring
+    '''
     total_rev = 0
     total_tax = 0
     total_profit = 0
-    transactions = Transaction.objects.all()
-    for transaction in transactions:
-        if transaction.completed:
-            total_rev += transaction.total
-            total_tax += transaction.sales_tax
-            #total_profit += transaction.profit broken right now
+
+    financial = Financial.objects.all().order_by('timestamp').last()
+    original_sale = Sale.objects.filter(id = instance.original_tid.id).first()
+
+    total_rev = financial.revenue - original_sale.subtotal
+    total_tax = financial.sales_tax - original_sale.sales_tax
+    total_profit = financial.profit - original_sale.profit
+
     financial_instance = Financial.objects.create(sales_tax=total_tax, profit=total_profit, revenue=total_rev)
-    financial_instance.save()"""
+    financial_instance.save()
