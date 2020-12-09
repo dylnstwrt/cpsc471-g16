@@ -23,6 +23,8 @@ router.register(r'bottom_pretty', views.BottomViewSet)
 router.register(r'top_pretty', views.TopViewSet)
 router.register(r'accessory_pretty', views.AcessoryViewSet)
 router.register(r'basket_pretty', views.BasketViewSet)
+router.register(r'financial_pretty', views.FinancialViewSet)
+#router.register(r'discount_pretty', views.DiscountViewSet)
 #router.register(r'distribute_pretty', views.Distributes)
 
 
