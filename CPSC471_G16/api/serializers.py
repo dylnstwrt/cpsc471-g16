@@ -117,3 +117,8 @@ class BasketSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Basket
         fields = '__all__'
+
+class FinancialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Financial
+        fields = '__all__'
