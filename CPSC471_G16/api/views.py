@@ -400,3 +400,11 @@ class BasketList(APIView):
 class FinancialViewSet(viewsets.ModelViewSet):
     queryset = models.Financial.objects.all().order_by('timestamp')
     serializer_class = serializers.FinancialSerializer
+
+class DiscountViewSet(viewsets.ModelViewSet):
+    queryset = models.Discount.objects.all()
+    serializer_class = serializers.DiscountSerializer
+
+class DistributeViewSet(viewsets.ModelViewSet):
+    queryset = models.Distributes.objects.all()
+    serializer_class = serializers.DistributeSerializer

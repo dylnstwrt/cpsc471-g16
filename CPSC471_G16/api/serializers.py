@@ -122,3 +122,13 @@ class FinancialSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Financial
         fields = '__all__'
+
+class DiscountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Discount
+        fields = '__all__'
+
+class DistributeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Distributes
+        fields = '__all__'
