@@ -441,7 +441,7 @@ def complete_special(sender, instance,  **kwargs):
             instance.message = "Completed_Sale"+warnings
 
 '''
-haven't tested this yet
+lil broken
 '''
 @receiver(pre_save, sender=Return)
 def complete_return(sender, instance,  **kwargs):
@@ -466,7 +466,7 @@ def update_financials_sale(sender, instance, **kwargs):
     total_rev = 0
     total_tax = 0
     total_profit = 0
-    transactions = Transaction.objects.all()
+    transactions = Sale.objects.all()
     for transaction in transactions:
         if transaction.completed:
             total_rev += transaction.total
@@ -475,7 +475,7 @@ def update_financials_sale(sender, instance, **kwargs):
     financial_instance = Financial.objects.create(sales_tax=total_tax, profit=total_profit, revenue=total_rev)
     financial_instance.save()
 
-@receiver(post_save, sender=Return)
+"""@receiver(post_save, sender=Return)
 def update_financials(sender, instance, **kwargs):
     total_rev = 0
     total_tax = 0
@@ -487,4 +487,4 @@ def update_financials(sender, instance, **kwargs):
             total_tax += transaction.sales_tax
             #total_profit += transaction.profit broken right now
     financial_instance = Financial.objects.create(sales_tax=total_tax, profit=total_profit, revenue=total_rev)
-    financial_instance.save()
+    financial_instance.save()"""
