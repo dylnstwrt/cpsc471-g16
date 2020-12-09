@@ -1,10 +1,12 @@
 '''
 CPSC471 - Group 16
 '''
-from django.db import models
-from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver
+from datetime import datetime
 
+from django.core.signals import request_finished
+from django.db import connection, models
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 
 # Create your models here.
 #
@@ -498,3 +500,12 @@ def update_financials(sender, instance, **kwargs):
 
     financial_instance = Financial.objects.create(sales_tax=total_tax, profit=total_profit, revenue=total_rev)
     financial_instance.save()
+
+@receiver(request_finished)
+def print_query(**kwargs):
+    '''
+    TODO: write to file for report
+    '''
+    for query in connection.queries:
+        query_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")+ "," + query['sql']
+        print(query_str)
