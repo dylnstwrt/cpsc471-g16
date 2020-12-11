@@ -13,7 +13,7 @@ from django.dispatch import receiver
 
 class Employee(models.Model):
     """
-    docstring
+    Employee Model
     """
     emp_id = models.IntegerField(unique=True)
     wage = models.FloatField()
@@ -31,7 +31,7 @@ class Employee(models.Model):
 
 class Manager(Employee):
     """
-    docstring
+    Manager Model
     """
     man_id = models.IntegerField(unique=True)
     man_type = models.CharField(max_length=5)
@@ -47,7 +47,7 @@ class Manager(Employee):
 
 class Administrator(Manager):
     """
-    docstring
+    Administrator Model
     """
     admin_id = models.IntegerField(unique=True)
 
@@ -61,7 +61,7 @@ class Administrator(Manager):
 
 class Equipment(models.Model):
     """
-    Docstring
+    Equipment Model
     """
     eq_id = models.IntegerField(unique=True)
     model = models.CharField(max_length=50)
@@ -79,7 +79,7 @@ class Equipment(models.Model):
 
 class Fixture(Equipment):
     """
-    docstring here
+    Fixture Model
     """
     description = models.CharField(max_length=50)
 
@@ -90,7 +90,7 @@ class Fixture(Equipment):
 
 class Till(Equipment):
     """
-    Docstring
+    Till Model
     """
     serial_no = models.IntegerField(unique=True)
     operating_system = models.CharField(max_length=50)
@@ -105,7 +105,7 @@ class Till(Equipment):
 
 class Transaction(models.Model):
     """
-    docstring
+    Transaction Model
     """
     tid = models.IntegerField(unique=True)
     eid = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
@@ -143,7 +143,7 @@ class Transaction(models.Model):
 
 class Sale(Transaction):
     """
-    docstring
+    Sale Model
     """
     profit = models.FloatField(
         default=0.00
@@ -156,7 +156,7 @@ class Sale(Transaction):
 
 class Return(Transaction):
     """
-    docstring
+    Return Model
     """
     original_tid = models.ForeignKey(Transaction, on_delete=models.SET_NULL, related_name="sale_tid", null=True)
     reason = models.CharField(max_length=50)
@@ -168,7 +168,7 @@ class Return(Transaction):
 
 class Special(Transaction):
     """
-    docstring
+    Special Model
     """
     models.ForeignKey(Manager, on_delete=models.SET_NULL, null=True)
 
@@ -179,7 +179,7 @@ class Special(Transaction):
 
 class Brand(models.Model):
     """
-    docstring
+    Brand Model
     """
     b_id = models.IntegerField(unique=True)
     name = models.CharField(max_length=50)
@@ -195,7 +195,7 @@ class Brand(models.Model):
 
 class Distributor(models.Model):
     """
-    docstring
+    Distributor Model
     """
     dist_id = models.IntegerField(unique=True)
     name = models.CharField(max_length=50)
@@ -212,7 +212,7 @@ class Distributor(models.Model):
 
 class Coupon(models.Model):
     """
-    docstring
+    Coupon Model
     """
     class DiscountTypes(models.TextChoices):
         FLAT = 'F', ('Flat')
@@ -237,7 +237,7 @@ class Coupon(models.Model):
 
 class IncidentReport(models.Model):
     """
-    docstring
+    Incident Report Model
     """
     eid = models.ForeignKey(Employee, on_delete=models.SET_NULL, related_name="employee_id", null=True)
     man_id = models.ForeignKey(Manager, on_delete=models.SET_NULL, related_name="manager_id", null=True)
@@ -256,7 +256,7 @@ class IncidentReport(models.Model):
 
 class Item(models.Model):
     """
-    docstring
+    Item Model
     """
     upc = models.IntegerField(unique=True)
     name = models.CharField(max_length=50)
@@ -278,7 +278,7 @@ class Item(models.Model):
 
 class Clothing(Item):
     """
-    docstring
+    Clothing Model
     """
     material = models.CharField(max_length=50)
     cl_type = models.CharField(max_length=50)
@@ -291,7 +291,7 @@ class Clothing(Item):
 
 class Bottom(Clothing):
     """
-    docstring
+    Bottom Model
     """
     waist = models.IntegerField()
     length = models.IntegerField()
@@ -303,7 +303,7 @@ class Bottom(Clothing):
 
 class Top(Clothing):
     """
-    docstring
+    Top Model
     """
     class SizeChoices(models.TextChoices):
         XSMALL = 'XS', ('Extra-Small')
@@ -325,7 +325,7 @@ class Top(Clothing):
 
 class Accessory(Item):
     """
-    docstring
+    Accessory Model
     """
     ac_type = models.CharField(max_length=50)
 
@@ -336,7 +336,7 @@ class Accessory(Item):
 
 class Basket(models.Model):
     """
-    docstring later
+    Basket Instance Model
     """
     tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
     #upc = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -347,7 +347,7 @@ class Basket(models.Model):
 
 class Distributes(models.Model):
     """
-    docstring
+    Distributes Instance Model
     """
     #change to manytomany
     dist_id = models.ManyToManyField(Distributor)
@@ -359,7 +359,7 @@ class Distributes(models.Model):
 
 class Discount(models.Model):
     '''
-    docstring
+    Discounts Instance Model
     '''
     tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
     c_code = models.ManyToManyField(Coupon)
@@ -369,7 +369,7 @@ class Discount(models.Model):
 
 class Financial(models.Model):
     '''
-
+    Financial Information Instance Model
     '''
     timestamp = models.DateTimeField(auto_now_add=True)
     revenue = models.FloatField()
@@ -381,14 +381,11 @@ class Financial(models.Model):
     class Meta:
         app_label = 'api'
 
-"""
-docstring: 
-TODO: do stuff to financial view if possible
-"""
 @receiver(pre_save, sender=Sale)
 def complete_sale(sender, instance,  **kwargs):
     '''
-    docstring
+    Complete_Sale: updates financial, transaction, and item instance when transaction is complete.
+    Decrements item count, and increments total revenue, profit, and tax.
     '''
     if instance.completed:
         print("Calculating Subtotal: ")
@@ -417,7 +414,8 @@ def complete_sale(sender, instance,  **kwargs):
 @receiver(pre_save, sender=Special)
 def complete_special(sender, instance,  **kwargs):
     '''
-    docstring
+    Complete_Special: updates financial, transaction, and item instance when transaction is complete.
+    Decrements item count, and increments total revenue, profit, and tax.
     '''
     if instance.completed:
         if instance.completed:
@@ -447,7 +445,8 @@ def complete_special(sender, instance,  **kwargs):
 @receiver(pre_save, sender=Return)
 def complete_return(sender, instance,  **kwargs):
     '''
-    docstring
+    Complete_Return: updates financial, transaction, and item instance when transaction is complete.
+    Increments item count and decrements total revenue, profit, and tax.
     '''
     if instance.completed:
         
@@ -468,7 +467,7 @@ def complete_return(sender, instance,  **kwargs):
 @receiver(post_save, sender=Sale)
 def update_financials_sale(sender, instance, **kwargs):
     '''
-    docstring
+    update_financials_sale: creates new timestamped instance of financial data when Sale is completed.
     '''
     total_rev = 0
     total_tax = 0
@@ -485,7 +484,7 @@ def update_financials_sale(sender, instance, **kwargs):
 @receiver(post_save, sender=Return)
 def update_financials(sender, instance, **kwargs):
     '''
-    docstring
+        update_financials_sale: creates new timestamped instance of financial data when Return is completed.
     '''
     total_rev = 0
     total_tax = 0
@@ -504,7 +503,7 @@ def update_financials(sender, instance, **kwargs):
 @receiver(request_finished)
 def print_query(**kwargs):
     '''
-    TODO: write to file for report
+    print_query: prints the sql queries via terminal for each request made by a client.
     '''
     for query in connection.queries:
         query_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")+ "," + query['sql']
