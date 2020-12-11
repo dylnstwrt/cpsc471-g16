@@ -11,6 +11,7 @@ from django.dispatch import receiver
 # Create your models here.
 #
 
+
 class Employee(models.Model):
     """
     Employee Model
@@ -29,6 +30,7 @@ class Employee(models.Model):
 
 ################################################
 
+
 class Manager(Employee):
     """
     Manager Model
@@ -45,6 +47,7 @@ class Manager(Employee):
 
 ################################################
 
+
 class Administrator(Manager):
     """
     Administrator Model
@@ -58,6 +61,7 @@ class Administrator(Manager):
         return str(self.admin_id)
 
 ################################################
+
 
 class Equipment(models.Model):
     """
@@ -77,6 +81,7 @@ class Equipment(models.Model):
 
 ################################################
 
+
 class Fixture(Equipment):
     """
     Fixture Model
@@ -87,6 +92,7 @@ class Fixture(Equipment):
         app_label = 'api'
 
 ################################################
+
 
 class Till(Equipment):
     """
@@ -102,6 +108,7 @@ class Till(Equipment):
         return str(self.serial_no)
 
 ################################################
+
 
 class Transaction(models.Model):
     """
@@ -128,7 +135,7 @@ class Transaction(models.Model):
         max_length=50,
         editable=False,
         default="",
-        )
+    )
 
     class Meta:
         app_label = 'api'
@@ -136,7 +143,6 @@ class Transaction(models.Model):
 
     def __str__(self):
         return str(self.tid)
-
 
 
 ################################################
@@ -154,17 +160,20 @@ class Sale(Transaction):
 
 ################################################
 
+
 class Return(Transaction):
     """
     Return Model
     """
-    original_tid = models.ForeignKey(Transaction, on_delete=models.SET_NULL, related_name="sale_tid", null=True)
+    original_tid = models.ForeignKey(
+        Transaction, on_delete=models.SET_NULL, related_name="sale_tid", null=True)
     reason = models.CharField(max_length=50)
 
     class Meta:
         app_label = 'api'
 
 ################################################
+
 
 class Special(Transaction):
     """
@@ -176,6 +185,7 @@ class Special(Transaction):
         app_label = 'api'
 
 ################################################
+
 
 class Brand(models.Model):
     """
@@ -192,6 +202,7 @@ class Brand(models.Model):
         return str(self.name)
 
 ################################################
+
 
 class Distributor(models.Model):
     """
@@ -210,6 +221,7 @@ class Distributor(models.Model):
 
 ################################################
 
+
 class Coupon(models.Model):
     """
     Coupon Model
@@ -226,7 +238,7 @@ class Coupon(models.Model):
     )
     valid_before = models.DateField(auto_now=False, auto_now_add=False)
     amount = models.IntegerField()
-    
+
     class Meta:
         app_label = 'api'
 
@@ -235,12 +247,15 @@ class Coupon(models.Model):
 
 ################################################
 
+
 class IncidentReport(models.Model):
     """
     Incident Report Model
     """
-    eid = models.ForeignKey(Employee, on_delete=models.SET_NULL, related_name="employee_id", null=True)
-    man_id = models.ForeignKey(Manager, on_delete=models.SET_NULL, related_name="manager_id", null=True)
+    eid = models.ForeignKey(
+        Employee, on_delete=models.SET_NULL, related_name="employee_id", null=True)
+    man_id = models.ForeignKey(
+        Manager, on_delete=models.SET_NULL, related_name="manager_id", null=True)
     action_taken = models.CharField(max_length=50)
     incident_date = models.DateField()
     filing_date = models.DateField(auto_now=False, auto_now_add=True)
@@ -253,6 +268,7 @@ class IncidentReport(models.Model):
         return str(self.description)
 
 ################################################
+
 
 class Item(models.Model):
     """
@@ -276,6 +292,7 @@ class Item(models.Model):
 
 ################################################
 
+
 class Clothing(Item):
     """
     Clothing Model
@@ -289,6 +306,7 @@ class Clothing(Item):
 
 ################################################
 
+
 class Bottom(Clothing):
     """
     Bottom Model
@@ -300,6 +318,7 @@ class Bottom(Clothing):
         app_label = 'api'
 
 ################################################
+
 
 class Top(Clothing):
     """
@@ -323,6 +342,7 @@ class Top(Clothing):
 
 ################################################
 
+
 class Accessory(Item):
     """
     Accessory Model
@@ -333,6 +353,7 @@ class Accessory(Item):
         app_label = 'api'
 
 ################################################
+
 
 class Basket(models.Model):
     """
@@ -345,17 +366,18 @@ class Basket(models.Model):
     class Meta:
         app_label = 'api'
 
+
 class Distributes(models.Model):
     """
     Distributes Instance Model
     """
-    #change to manytomany
+    # change to manytomany
     dist_id = models.ManyToManyField(Distributor)
     item_upc = models.ForeignKey(Item, on_delete=models.CASCADE)
-    
 
     class Meta:
         app_label = 'api'
+
 
 class Discount(models.Model):
     '''
@@ -364,8 +386,10 @@ class Discount(models.Model):
     tid = models.ForeignKey(Transaction, on_delete=models.CASCADE)
     c_code = models.ManyToManyField(Coupon)
     #objects = models.Manager()
+
     class Meta:
         app_label = 'api'
+
 
 class Financial(models.Model):
     '''
@@ -377,9 +401,9 @@ class Financial(models.Model):
     #inventory_cost = models.FloatField()
     profit = models.FloatField()
 
-
     class Meta:
         app_label = 'api'
+
 
 @receiver(pre_save, sender=Sale)
 def complete_sale(sender, instance,  **kwargs):
@@ -389,7 +413,7 @@ def complete_sale(sender, instance,  **kwargs):
     '''
     if instance.completed:
         print("Calculating Subtotal: ")
-        basket_instances = Basket.objects.filter(tid = instance.id)
+        basket_instances = Basket.objects.filter(tid=instance.id)
         subtotal = 0
         profit = 0
         warnings = ""
@@ -399,10 +423,12 @@ def complete_sale(sender, instance,  **kwargs):
                 subtotal += item_obj.sales_price
                 profit += item_obj.sales_price - item_obj.unit_price
                 item_obj.stock_quantity -= 1
-                if item_obj.stock_quantity < 5 and item_obj.stock_quantity > 0: # set threshold here
-                    warnings += " LowStock:"+item_obj.name+"_"+str(item_obj.upc)
+                if item_obj.stock_quantity < 5 and item_obj.stock_quantity > 0:  # set threshold here
+                    warnings += " LowStock:" + \
+                        item_obj.name+"_"+str(item_obj.upc)
                 elif item_obj.stock_quantity < 0:
-                    warnings += " OverSold:"+item_obj.name+"_"+str(item_obj.upc)
+                    warnings += " OverSold:" + \
+                        item_obj.name+"_"+str(item_obj.upc)
                 item_obj.save()
 
         instance.subtotal = subtotal
@@ -410,7 +436,8 @@ def complete_sale(sender, instance,  **kwargs):
         instance.total = subtotal + instance.sales_tax
         instance.profit = profit
         instance.message = "Completed_Sale"+warnings
-        
+
+
 @receiver(pre_save, sender=Special)
 def complete_special(sender, instance,  **kwargs):
     '''
@@ -420,7 +447,7 @@ def complete_special(sender, instance,  **kwargs):
     if instance.completed:
         if instance.completed:
             print("Calculating Subtotal: ")
-            basket_instances = Basket.objects.filter(tid = instance.id)
+            basket_instances = Basket.objects.filter(tid=instance.id)
             subtotal = 0
             profit = 0
             warnings = ""
@@ -430,10 +457,12 @@ def complete_special(sender, instance,  **kwargs):
                     subtotal += item_obj.sales_price
                     profit += item_obj.sales_price - item_obj.unit_price
                     item_obj.stock_quantity -= 1
-                    if item_obj.stock_quantity < 5 and item_obj.stock_quantity > 0: # set threshold here
-                        warnings += " LowStock:"+item_obj.name+"_"+str(item_obj.upc)
+                    if item_obj.stock_quantity < 5 and item_obj.stock_quantity > 0:  # set threshold here
+                        warnings += " LowStock:" + \
+                            item_obj.name+"_"+str(item_obj.upc)
                     elif item_obj.stock_quantity < 0:
-                        warnings += " OverSold:"+item_obj.name+"_"+str(item_obj.upc)
+                        warnings += " OverSold:" + \
+                            item_obj.name+"_"+str(item_obj.upc)
                     item_obj.save()
 
             instance.subtotal = subtotal
@@ -449,20 +478,22 @@ def complete_return(sender, instance,  **kwargs):
     Increments item count and decrements total revenue, profit, and tax.
     '''
     if instance.completed:
-        
-        original_sale = Sale.objects.filter(id=instance.original_tid.id).first()
+
+        original_sale = Sale.objects.filter(
+            id=instance.original_tid.id).first()
 
         instance.subtotal = -original_sale.subtotal
         instance.sales_tax = -(.05 * original_sale.subtotal)
         instance.total = instance.subtotal + instance.sales_tax
         instance.message = "Completed_Return"
 
-        basket_instances = Basket.objects.filter(tid = instance.original_tid.id)
+        basket_instances = Basket.objects.filter(tid=instance.original_tid.id)
         for basket in basket_instances:
             item_obj = basket.basket_item.all().first()
             if item_obj is not None:
                 item_obj.stock_quantity += 1
                 item_obj.save()
+
 
 @receiver(post_save, sender=Sale)
 def update_financials_sale(sender, instance, **kwargs):
@@ -478,8 +509,10 @@ def update_financials_sale(sender, instance, **kwargs):
             total_rev += transaction.total
             total_tax += transaction.sales_tax
             total_profit += transaction.profit
-    financial_instance = Financial.objects.create(sales_tax=total_tax, profit=total_profit, revenue=total_rev)
+    financial_instance = Financial.objects.create(
+        sales_tax=total_tax, profit=total_profit, revenue=total_rev)
     financial_instance.save()
+
 
 @receiver(post_save, sender=Return)
 def update_financials(sender, instance, **kwargs):
@@ -491,14 +524,16 @@ def update_financials(sender, instance, **kwargs):
     total_profit = 0
 
     financial = Financial.objects.all().order_by('timestamp').last()
-    original_sale = Sale.objects.filter(id = instance.original_tid.id).first()
+    original_sale = Sale.objects.filter(id=instance.original_tid.id).first()
 
     total_rev = financial.revenue - original_sale.subtotal
     total_tax = financial.sales_tax - original_sale.sales_tax
     total_profit = financial.profit - original_sale.profit
 
-    financial_instance = Financial.objects.create(sales_tax=total_tax, profit=total_profit, revenue=total_rev)
+    financial_instance = Financial.objects.create(
+        sales_tax=total_tax, profit=total_profit, revenue=total_rev)
     financial_instance.save()
+
 
 @receiver(request_finished)
 def print_query(**kwargs):
@@ -506,5 +541,6 @@ def print_query(**kwargs):
     print_query: prints the sql queries via terminal for each request made by a client.
     '''
     for query in connection.queries:
-        query_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")+ "," + query['sql']
+        query_str = datetime.now().strftime(
+            "%d/%m/%Y %H:%M:%S") + "," + query['sql']
         print(query_str)
