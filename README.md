@@ -13,12 +13,13 @@ Please make sure you have Python3 and Pip3 Installed.
     python3 manage.py runserver
     python3 manage.py createsuperuser <-- this is just in case
 
-### To connect to root view, use URL:
-    http://127.0.0.1:<port from console>/api/v1
+### To connect to server:
+
+Connect to the server using the URL as provided in the console when running.
 
 ### When sending ```PUT``` or ```PATCH``` requests; ***use the ```id``` field as the identifier/pk***; ***NOT any fields with the suffix*** ```_id```.
 
-### To see Documentation, using superuser creds to login at:
+### To see Implementation Documentation, using superuser creds to login at:
 
     http://127.0.0.1:<port from console>/admin/doc/
 
